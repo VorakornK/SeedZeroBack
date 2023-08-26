@@ -18,6 +18,11 @@ async def get_alltasks() -> List[Task]:
   tasks = await Task.find().to_list()
   return tasks
 
+@app.get('/todo/{name}')
+async def get_todo(name: str) -> Task:
+  task = await Task.find_one({"name": name})
+  return task
+
 @app.post("/create_todo")
 async def create_task(task_body: TaskBody) -> Task:
   task = Task(**task_body.model_dump())
@@ -29,12 +34,11 @@ async def delete_task(name: str):
   del_task = Task.find({"name": name})
   await del_task.delete()
 
-@app.put("/update_task/{name}")
+@app.patch("/update_task/{name}")
 async def update_task(name: str, new_task: TaskBody):
-  task = Task.find({"name": name})
-  task.name = new_task.name
+  task = await Task.find_one({"name": name})
+  task.name = new_task.name if new_task.name != None else name
   task.finished = new_task.finished
-
   await task.save()
 
 
