@@ -24,14 +24,14 @@ async def create_task(task_body: TaskBody) -> Task:
   await task.insert()
   return task
 
-@app.delete("/delete_todo/{id}")
-async def delete_task(id: str):
-  del_task = await Task.get(id)
+@app.delete("/delete_todo/{name}")
+async def delete_task(name: str):
+  del_task = Task.find({"name": name})
   await del_task.delete()
 
-@app.put("/update_task/{id}")
-async def update_task(id: str, new_task: TaskBody):
-  task = await Task.get(id)
+@app.put("/update_task/{name}")
+async def update_task(name: str, new_task: TaskBody):
+  task = Task.find({"name": name})
   task.name = new_task.name
   task.finished = new_task.finished
 
